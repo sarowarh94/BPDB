@@ -29,18 +29,33 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .search-and-count {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         input {
-            padding: 10px;
+            padding: 12px 20px;
             width: 100%;
             max-width: 400px;
-            border: 1px solid #007bff;
-            border-radius: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: border-color 0.3s;
+            border: 2px solid #007bff;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: border-color 0.3s, transform 0.3s;
+            margin-right: 10px;
+            font-size: 16px;
+            outline: none;
+            background-color: #ffffff;
         }
         input:focus {
             border-color: #0056b3;
-            outline: none;
+            transform: scale(1.02);
+        }
+        input::placeholder {
+            transition: opacity 0.3s;
+        }
+        input:focus::placeholder {
+            opacity: 0.6;
         }
         table {
             width: 100%;
@@ -74,12 +89,23 @@
             color: white;
             border: none;
             border-radius: 25px;
-            padding: 8px 15px;
+            padding: 10px 20px;
             font-family: 'Hind Siliguri', sans-serif;
-            transition: background-color 0.3s;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .copy-button:hover {
             background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .copy-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .total-count {
+            font-size: 20px;
+            color: #555;
         }
     </style>
 </head>
@@ -88,7 +114,10 @@
     <h1>কাজী টেলিকম</h1>
     <h2>বিপিডিবি প্রি-পেইড মিটার লিস্ট</h2>
     <div class="search-container">
-        <input type="text" id="search" placeholder="সার্চ করুন..." onkeyup="searchList()">
+        <div class="search-and-count">
+            <input type="text" id="search" placeholder="সার্চ করুন..." onkeyup="searchList()">
+            <span class="total-count"><span id="countDisplay">0</span></span>
+        </div>
     </div>
     
     <table id="meterTable">
@@ -189,7 +218,8 @@
                 <td>কালা মিয়া</td>
                 <td>10110569428</td>
                 <td><button class="copy-button" onclick="copyToClipboard('10110569428')">কপি</button></td>
-            </tr><tr>
+            </tr>
+            <tr>
                 <td>কামাল মিয়া(গ্যারেজ-০২)</td>
                 <td>10110572669</td>
                 <td><button class="copy-button" onclick="copyToClipboard('10110572669')">কপি</button></td>
@@ -281,11 +311,19 @@
         function searchList() {
             const searchInput = document.getElementById('search').value.toLowerCase();
             const rows = document.querySelectorAll('#meterTable tbody tr');
+            let count = 0;
 
             rows.forEach(row => {
                 const nameText = row.cells[0].textContent.toLowerCase();
-                row.style.display = nameText.includes(searchInput) ? '' : 'none';
+                if (nameText.includes(searchInput)) {
+                    row.style.display = '';
+                    count++;
+                } else {
+                    row.style.display = 'none';
+                }
             });
+
+            document.getElementById('countDisplay').textContent = count;
         }
 
         function copyToClipboard(meterNumber) {
@@ -293,9 +331,12 @@
                 alert('মিটার নাম্বার কপি করা হয়েছে: ' + meterNumber);
             });
         }
+
+        // Initialize total count on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('countDisplay').textContent = document.querySelectorAll('#meterTable tbody tr').length;
+        });
     </script>
 
 </body>
 </html>
-
-
